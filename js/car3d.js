@@ -26,13 +26,13 @@ const body = new THREE.Mesh(
 carGroup.add(body);
 
 // Car Top
-const top = new THREE.Mesh(
+const carTop = new THREE.Mesh(
     new THREE.BoxGeometry(1.6, 0.5, 2),
     new THREE.MeshStandardMaterial({ color: 0x00ffaa, metalness: 0.7, roughness: 0.1 })
 );
-top.position.y = 0.5;
-top.position.z = -0.2;
-carGroup.add(top);
+carTop.position.y = 0.5;
+carTop.position.z = -0.2;
+carGroup.add(carTop);
 
 // Wheels
 const wheelGeom = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 32);
