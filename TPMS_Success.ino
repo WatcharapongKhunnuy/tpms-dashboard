@@ -74,6 +74,12 @@ TPMSWheel frontRight = {"FR", 0, 0, false, false, false, false, 0, false};
 TPMSWheel rearLeft   = {"RL", 0, 0, false, false, false, false, 0, false};
 TPMSWheel rearRight  = {"RR", 0, 0, false, false, false, false, 0, false};
 
+// --- Timers for WebSocket ---
+unsigned long lastPing = 0;
+unsigned long lastReconnect = 0;
+const unsigned long RECONNECT_INTERVAL = 5000; // 5 seconds backoff
+const unsigned long PING_INTERVAL = 30000;      // 30 seconds heartbeat
+
 // =======================
 // --- Draw Functions ----
 // =======================
@@ -423,8 +429,6 @@ void setup() {
 // =======================
 // --- Loop --------------
 // =======================
-unsigned long lastPing = 0;
-
 void loop() {
     // 3️⃣ Check WiFi Connection
     if (WiFi.status() != WL_CONNECTED) {
@@ -445,17 +449,18 @@ void loop() {
     updateBlinkState();
     displayTPMS();
     
-    // 1️⃣ WebSocket communication and data push with Reconnect logic
+    // 1️⃣ WebSocket communication and data push with Backoff Reconnect
     if (client.available()) {
         client.poll();
         
-        // 3️⃣ Heartbeat: Send ping every 30 seconds to keep connection alive
-        if (millis() - lastPing > 30000) {
+        // Heartbeat: Send ping every 30 seconds to keep connection alive
+        if (millis() - lastPing > PING_INTERVAL) {
             client.ping();
             lastPing = millis();
             Serial.println("WebSocket Ping sent");
         }
 
+        // JSON Data Construction (Simplified for reliability)
         String json = "{\"type\":\"update\",\"data\":{";
         json += "\"fl\":{\"pressure\":" + String(frontLeft.psi) + ",\"temp\":" + String(frontLeft.temp) + "},";
         json += "\"fr\":{\"pressure\":" + String(frontRight.psi) + ",\"temp\":" + String(frontRight.temp) + "},";
@@ -463,18 +468,20 @@ void loop() {
         json += "\"rr\":{\"pressure\":" + String(rearRight.psi) + ",\"temp\":" + String(rearRight.temp) + "}";
         json += "}}";
 
-        // 1️⃣ Double-check availability before sending to prevent crashes
+        // Double-check availability before sending
         if (client.available()) {
             client.send(json);
             Serial.println("Sent TPMS update: " + json);
         }
         
-        // 2️⃣ Rate limiting: 0.5 Hz update rate (Real car behavior)
-        delay(2000); 
+        delay(2000); // 0.5 Hz update rate
     } else {
-        Serial.println("Reconnecting WebSocket...");
-        client.connect(websocket_server);
-        delay(1000);
+        // 1️⃣ & 2️⃣ Backoff reconnect with WiFi check
+        if (WiFi.status() == WL_CONNECTED && millis() - lastReconnect > RECONNECT_INTERVAL) {
+            Serial.println("Reconnecting WebSocket...");
+            client.connect(websocket_server);
+            lastReconnect = millis();
+        }
     }
 
     pBLEScan->start(scanTime, false);
