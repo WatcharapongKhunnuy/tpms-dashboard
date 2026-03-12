@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>TPMS Dashboard</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<div id="splash">
+<div class="logo">🚗</div>
+<div class="text">TPMS</div>
+</div>
+
+<div class="dashboard">
+
+<h1>TPMS Dashboard</h1>
+
+<div id="car3d"></div>
+
+<div class="wheelGrid">
+
+<div class="wheelCard" id="FL">
+<h2>Front Left</h2>
+<div class="psi" id="psiFL">--</div>
+<div class="temp" id="tempFL">--</div>
+</div>
+
+<div class="wheelCard" id="FR">
+<h2>Front Right</h2>
+<div class="psi" id="psiFR">--</div>
+<div class="temp" id="tempFR">--</div>
+</div>
+
+<div class="wheelCard" id="RL">
+<h2>Rear Left</h2>
+<div class="psi" id="psiRL">--</div>
+<div class="temp" id="tempRL">--</div>
+</div>
+
+<div class="wheelCard" id="RR">
+<h2>Rear Right</h2>
+<div class="psi" id="psiRR">--</div>
+<div class="temp" id="tempRR">--</div>
+</div>
+
+</div>
+
+<canvas id="chartFL"></canvas>
+
+</div>
+
+<script src="heatmap.js"></script>
+<script src="ws.js"></script>
+<script src="app.js"></script>
+<script src="3dcar.js"></script>
+
+</body>
+</html>
