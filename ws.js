@@ -15,7 +15,11 @@ function updateWheel(id, wheel) {
     if (psiElement) psiElement.innerText = wheel.pressure + " PSI";
     if (tempElement) tempElement.innerText = wheel.temp + "°C";
     
-    // Also log for debugging
+    // Update 3D Model
+    if (window.updateWheel3D) {
+        window.updateWheel3D(id, wheel);
+    }
+    
     console.log(`Updated ${id}:`, wheel);
 }
 
