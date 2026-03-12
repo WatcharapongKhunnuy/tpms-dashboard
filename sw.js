@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tpms-pro-v1';
+const CACHE_NAME = 'tpms-pro-v4';
 const ASSETS = [
     './',
     './index.html',

@@ -1,6 +1,6 @@
-const SERVER_URL = window.location.hostname === 'localhost' 
-    ? "ws://localhost:8080" 
-    : "wss://tpms-dashboard.onrender.com";
+const SERVER_URL = window.location.protocol === 'https:' 
+    ? `wss://${window.location.host}` 
+    : `ws://${window.location.host}`;
 
 let socket;
 let heartbeat;
