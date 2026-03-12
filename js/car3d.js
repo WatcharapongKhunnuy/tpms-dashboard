@@ -1,78 +1,82 @@
-const container = document.getElementById("car3d");
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+(function() {
+    const carContainer = document.getElementById("car3d");
+    if (!carContainer) return;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setSize(container.clientWidth, container.clientHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-container.appendChild(renderer.domElement);
+    const carScene = new THREE.Scene();
+    const carCamera = new THREE.PerspectiveCamera(75, carContainer.clientWidth / carContainer.clientHeight, 0.1, 1000);
 
-// Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-scene.add(ambientLight);
+    const carRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    carRenderer.setSize(carContainer.clientWidth, carContainer.clientHeight);
+    carRenderer.setPixelRatio(window.devicePixelRatio);
+    carContainer.appendChild(carRenderer.domElement);
 
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(5, 10, 5);
-scene.add(dirLight);
+    // Lighting
+    const carAmbientLight = new THREE.AmbientLight(0xffffff, 1);
+    carScene.add(carAmbientLight);
 
-// Car Group
-const carGroup = new THREE.Group();
+    const carDirLight = new THREE.DirectionalLight(0xffffff, 1);
+    carDirLight.position.set(5, 10, 5);
+    carScene.add(carDirLight);
 
-// Car Body
-const body = new THREE.Mesh(
-    new THREE.BoxGeometry(2, 0.6, 4),
-    new THREE.MeshStandardMaterial({ color: 0x00ffaa, metalness: 0.7, roughness: 0.1 })
-);
-carGroup.add(body);
+    // Car Group
+    const carGroup = new THREE.Group();
 
-// Car Top
-const carTop = new THREE.Mesh(
-    new THREE.BoxGeometry(1.6, 0.5, 2),
-    new THREE.MeshStandardMaterial({ color: 0x00ffaa, metalness: 0.7, roughness: 0.1 })
-);
-carTop.position.y = 0.5;
-carTop.position.z = -0.2;
-carGroup.add(carTop);
+    // Car Body
+    const carBody = new THREE.Mesh(
+        new THREE.BoxGeometry(2, 0.6, 4),
+        new THREE.MeshStandardMaterial({ color: 0x00ffaa, metalness: 0.7, roughness: 0.1 })
+    );
+    carGroup.add(carBody);
 
-// Wheels
-const wheelGeom = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 32);
-const wheelMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
-const wheels = [];
+    // Car Roof
+    const carRoof = new THREE.Mesh(
+        new THREE.BoxGeometry(1.6, 0.5, 2),
+        new THREE.MeshStandardMaterial({ color: 0x00ffaa, metalness: 0.7, roughness: 0.1 })
+    );
+    carRoof.position.y = 0.5;
+    carRoof.position.z = -0.2;
+    carGroup.add(carRoof);
 
-const addWheel = (x, y, z) => {
-    const wheel = new THREE.Mesh(wheelGeom, wheelMat.clone());
-    wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(x, y, z);
-    wheels.push(wheel);
-    carGroup.add(wheel);
-};
+    // Wheels
+    const carWheelGeom = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 32);
+    const carWheelMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    const carWheels = [];
 
-addWheel(1.1, -0.3, 1.2);  // FL
-addWheel(-1.1, -0.3, 1.2); // FR
-addWheel(1.1, -0.3, -1.2); // RL
-addWheel(-1.1, -0.3, -1.2); // RR
+    const addCarWheel = (x, y, z) => {
+        const wheel = new THREE.Mesh(carWheelGeom, carWheelMat.clone());
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(x, y, z);
+        carWheels.push(wheel);
+        carGroup.add(wheel);
+    };
 
-scene.add(carGroup);
-camera.position.set(4, 3, 5);
-camera.lookAt(0, 0, 0);
+    addCarWheel(1.1, -0.3, 1.2);  // FL
+    addCarWheel(-1.1, -0.3, 1.2); // FR
+    addCarWheel(1.1, -0.3, -1.2); // RL
+    addCarWheel(-1.1, -0.3, -1.2); // RR
 
-function animate() {
-    requestAnimationFrame(animate);
-    carGroup.rotation.y += 0.005;
-    renderer.render(scene, camera);
-}
-animate();
+    carScene.add(carGroup);
+    carCamera.position.set(4, 3, 5);
+    carCamera.lookAt(0, 0, 0);
 
-window.updateWheel3D = (id, pressure) => {
-    const wheelIndex = { fl: 0, fr: 1, rl: 2, rr: 3 };
-    const wheel = wheels[wheelIndex[id]];
-    if (wheel) {
-        wheel.material.color.set(pressure < 28 ? 0xff0000 : 0x333333);
+    function carAnimate() {
+        requestAnimationFrame(carAnimate);
+        carGroup.rotation.y += 0.005;
+        carRenderer.render(carScene, carCamera);
     }
-};
+    carAnimate();
 
-window.addEventListener('resize', () => {
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    camera.aspect = container.clientWidth / container.clientHeight;
-    camera.updateProjectionMatrix();
-});
+    window.updateWheel3D = (id, pressure) => {
+        const wheelIndex = { fl: 0, fr: 1, rl: 2, rr: 3 };
+        const wheel = carWheels[wheelIndex[id]];
+        if (wheel) {
+            wheel.material.color.set(pressure < 28 ? 0xff0000 : 0x333333);
+        }
+    };
+
+    window.addEventListener('resize', () => {
+        carRenderer.setSize(carContainer.clientWidth, carContainer.clientHeight);
+        carCamera.aspect = carContainer.clientWidth / carContainer.clientHeight;
+        carCamera.updateProjectionMatrix();
+    });
+})();
