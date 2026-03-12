@@ -1,73 +1,67 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚗 TPMS Pro Dashboard</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="icons/icon-192.png">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>TPMS Dashboard</title>
-
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-
-<link rel="stylesheet" href="style.css">
-<link rel="icon" href="icons/icon-192.png">
-
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <!-- CDN Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
 </head>
-
 <body>
 
-<div id="splash">
-<div class="logo">🚗</div>
-<div class="text">TPMS</div>
-</div>
+    <div id="splash">
+        <div class="logo">🚗</div>
+        <div class="text">TPMS PRO</div>
+    </div>
 
-<div class="dashboard">
+    <h1>🚗 TPMS Pro Dashboard</h1>
 
-<h1>TPMS Dashboard</h1>
+    <div class="dashboard">
+        <div id="car3d"></div>
 
-<div id="car3d"></div>
+        <div class="tires">
+            <div class="card" id="fl">
+                <h2>Front Left</h2>
+                <div class="psi">-- PSI</div>
+                <div class="temp">--°C</div>
+            </div>
 
-<div class="wheelGrid">
+            <div class="card" id="fr">
+                <h2>Front Right</h2>
+                <div class="psi">-- PSI</div>
+                <div class="temp">--°C</div>
+            </div>
 
-<div class="wheelCard" id="FL">
-<h2>Front Left</h2>
-<div class="psi" id="psiFL">--</div>
-<div class="temp" id="tempFL">--</div>
-</div>
+            <div class="card" id="rl">
+                <h2>Rear Left</h2>
+                <div class="psi">-- PSI</div>
+                <div class="temp">--°C</div>
+            </div>
 
-<div class="wheelCard" id="FR">
-<h2>Front Right</h2>
-<div class="psi" id="psiFR">--</div>
-<div class="temp" id="tempFR">--</div>
-</div>
+            <div class="card" id="rr">
+                <h2>Rear Right</h2>
+                <div class="psi">-- PSI</div>
+                <div class="temp">--°C</div>
+            </div>
+        </div>
+    </div>
 
-<div class="wheelCard" id="RL">
-<h2>Rear Left</h2>
-<div class="psi" id="psiRL">--</div>
-<div class="temp" id="tempRL">--</div>
-</div>
+    <div class="chart-container">
+        <canvas id="pressureChart"></canvas>
+    </div>
 
-<div class="wheelCard" id="RR">
-<h2>Rear Right</h2>
-<div class="psi" id="psiRR">--</div>
-<div class="temp" id="tempRR">--</div>
-</div>
-
-</div>
-
-<canvas id="chartFL"></canvas>
-
-</div>
-
-<script src="heatmap.js"></script>
-<script src="ws.js"></script>
-<script src="app.js"></script>
-<script src="3dcar.js"></script>
+    <!-- Scripts -->
+    <script src="js/car3d.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/ws.js"></script>
+    <script src="js/app.js"></script>
 
 </body>
 </html>

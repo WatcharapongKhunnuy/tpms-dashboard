@@ -1,0 +1,98 @@
+body {
+    background: #000;
+    color: white;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+#car3d {
+    width: 500px;
+    height: 400px;
+}
+
+.tires {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.card {
+    background: #111;
+    border-radius: 20px;
+    padding: 20px;
+    width: 180px;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card h2 {
+    font-size: 14px;
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.psi {
+    font-size: 32px;
+    font-weight: bold;
+    color: #00ffee;
+}
+
+.temp {
+    font-size: 18px;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.alert {
+    background: #440000;
+    box-shadow: 0 0 30px #ff0000;
+    animation: blink 1s infinite;
+}
+
+.chart-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #111;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+@keyframes blink {
+    50% { opacity: 0.6; }
+}
+
+#splash {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease;
+}
+
+.logo { font-size: 80px; margin-bottom: 20px; }
+.text { font-size: 24px; letter-spacing: 5px; }
+
+@media (max-width: 800px) {
+    .dashboard { flex-direction: column; }
+    #car3d { width: 100%; height: 300px; }
+}
