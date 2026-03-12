@@ -391,13 +391,19 @@ void setup() {
     u8g2.setFont(u8g2_font_6x10_tr);
     u8g2.sendBuffer();
 
-    // WiFi Connection
+    // WiFi Connection with 10s timeout
     WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
+    unsigned long start = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() - start < 10000) {
         delay(500);
         Serial.print(".");
     }
-    Serial.println("\nWiFi connected");
+    
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("\nWiFi connected");
+    } else {
+        Serial.println("\nWiFi connection failed (timeout)");
+    }
 
     // WebSocket Connection
     client.connect(websocket_server);
@@ -417,6 +423,8 @@ void setup() {
 // =======================
 // --- Loop --------------
 // =======================
+unsigned long lastPing = 0;
+
 void loop() {
     // 3️⃣ Check WiFi Connection
     if (WiFi.status() != WL_CONNECTED) {
@@ -441,6 +449,13 @@ void loop() {
     if (client.available()) {
         client.poll();
         
+        // 3️⃣ Heartbeat: Send ping every 30 seconds to keep connection alive
+        if (millis() - lastPing > 30000) {
+            client.ping();
+            lastPing = millis();
+            Serial.println("WebSocket Ping sent");
+        }
+
         String json = "{\"type\":\"update\",\"data\":{";
         json += "\"fl\":{\"pressure\":" + String(frontLeft.psi) + ",\"temp\":" + String(frontLeft.temp) + "},";
         json += "\"fr\":{\"pressure\":" + String(frontRight.psi) + ",\"temp\":" + String(frontRight.temp) + "},";
@@ -448,8 +463,11 @@ void loop() {
         json += "\"rr\":{\"pressure\":" + String(rearRight.psi) + ",\"temp\":" + String(rearRight.temp) + "}";
         json += "}}";
 
-        client.send(json);
-        Serial.println("Sent TPMS update: " + json);
+        // 1️⃣ Double-check availability before sending to prevent crashes
+        if (client.available()) {
+            client.send(json);
+            Serial.println("Sent TPMS update: " + json);
+        }
         
         // 2️⃣ Rate limiting: 0.5 Hz update rate (Real car behavior)
         delay(2000); 
