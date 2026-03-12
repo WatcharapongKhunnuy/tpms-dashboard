@@ -43,6 +43,8 @@ setInterval(() => {
 }, 1000);
 
 function addPressureData(data) {
+    if (!data.fl || !data.fr || !data.rl || !data.rr) return;
+
     const time = new Date().toLocaleTimeString();
     pressureChart.data.labels.push(time);
     

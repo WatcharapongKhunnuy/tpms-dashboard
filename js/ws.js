@@ -27,6 +27,14 @@ function resetDataTimeout() {
 }
 
 function connectWS() {
+    if (socket) {
+        socket.onopen = null;
+        socket.onmessage = null;
+        socket.onclose = null;
+        socket.onerror = null;
+        socket.close();
+    }
+    
     socket = new WebSocket(SERVER_URL);
 
     socket.onopen = () => {
@@ -35,6 +43,7 @@ function connectWS() {
         if (typeof hideOffline === 'function') hideOffline();
         resetDataTimeout();
 
+        if (heartbeat) clearInterval(heartbeat);
         heartbeat = setInterval(() => {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: "ping" }));
@@ -85,7 +94,8 @@ function connectWS() {
     };
 
     socket.onerror = (err) => {
-        socket.close();
+        console.error("Socket Error:", err);
+        if (socket) socket.close();
     };
 }
 
