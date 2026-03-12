@@ -32,7 +32,9 @@ function connectWS() {
         socket.onmessage = null;
         socket.onclose = null;
         socket.onerror = null;
-        socket.close();
+        if (socket.readyState !== WebSocket.CLOSED) {
+            socket.close();
+        }
     }
     
     socket = new WebSocket(SERVER_URL);
@@ -46,7 +48,11 @@ function connectWS() {
         if (heartbeat) clearInterval(heartbeat);
         heartbeat = setInterval(() => {
             if (socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ type: "ping" }));
+                try {
+                    socket.send(JSON.stringify({ type: "ping" }));
+                } catch (e) {
+                    console.warn("Heartbeat send failed:", e);
+                }
             }
         }, 30000);
     };
@@ -95,7 +101,9 @@ function connectWS() {
 
     socket.onerror = (err) => {
         console.error("Socket Error:", err);
-        if (socket) socket.close();
+        if (socket && socket.readyState !== WebSocket.CLOSED) {
+            socket.close();
+        }
     };
 }
 
