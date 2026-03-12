@@ -9,18 +9,26 @@ socket.onopen = () => {
 }
 
 function updateWheel(id, wheel) {
-    const psiElement = document.getElementById("psi" + id.toUpperCase());
-    const tempElement = document.getElementById("temp" + id.toUpperCase());
+    const idUpper = id.toUpperCase();
+    const psiElement = document.getElementById("psi" + idUpper);
+    const tempElement = document.getElementById("temp" + idUpper);
+    const cardElement = document.getElementById(idUpper);
     
-    if (psiElement) psiElement.innerText = wheel.pressure + " PSI";
-    if (tempElement) tempElement.innerText = wheel.temp + "°C";
+    const pressure = parseFloat(wheel.pressure) || 0;
+    const temp = parseInt(wheel.temp) || 0;
+
+    if (psiElement) psiElement.innerText = pressure.toFixed(1) + " PSI";
+    if (tempElement) tempElement.innerText = temp + "°C";
+    
+    // Update card background based on pressure
+    if (cardElement && typeof getPressureColor === 'function') {
+        cardElement.style.background = getPressureColor(pressure);
+    }
     
     // Update 3D Model
     if (window.updateWheel3D) {
         window.updateWheel3D(id, wheel);
     }
-    
-    console.log(`Updated ${id}:`, wheel);
 }
 
 socket.onmessage = (event) => {
