@@ -1,6 +1,6 @@
 const SERVER_URL = window.location.hostname === 'localhost' 
     ? "ws://localhost:8080" 
-    : "wss://tpms-dashboard-server.onrender.com"; // <-- Update this after cloud deployment
+    : "wss://tpms-dashboard.onrender.com";
 
 const socket = new WebSocket(SERVER_URL);
 
