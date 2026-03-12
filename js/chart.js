@@ -5,14 +5,15 @@ const pressureChart = new Chart(ctx, {
     data: {
         labels: [],
         datasets: [
-            { label: 'FL', data: [], borderColor: '#00ffee', tension: 0.4 },
-            { label: 'FR', data: [], borderColor: '#ff00ff', tension: 0.4 },
-            { label: 'RL', data: [], borderColor: '#ffff00', tension: 0.4 },
-            { label: 'RR', data: [], borderColor: '#00ff00', tension: 0.4 }
+            { label: 'FL', data: [], borderColor: '#00ffee', tension: 0.4, pointRadius: 0 },
+            { label: 'FR', data: [], borderColor: '#ff00ff', tension: 0.4, pointRadius: 0 },
+            { label: 'RL', data: [], borderColor: '#ffff00', tension: 0.4, pointRadius: 0 },
+            { label: 'RR', data: [], borderColor: '#00ff00', tension: 0.4, pointRadius: 0 }
         ]
     },
     options: {
         responsive: true,
+        animation: false, // Disable animations for performance
         plugins: {
             legend: { labels: { color: 'white' } }
         },
@@ -31,6 +32,15 @@ const pressureChart = new Chart(ctx, {
 });
 
 const MAX_POINTS = 50;
+let needsChartUpdate = false;
+
+// 3️⃣ Chart update throttling (Update at 1 FPS)
+setInterval(() => {
+    if (needsChartUpdate) {
+        pressureChart.update('none');
+        needsChartUpdate = false;
+    }
+}, 1000);
 
 function addPressureData(data) {
     const time = new Date().toLocaleTimeString();
@@ -46,5 +56,5 @@ function addPressureData(data) {
         pressureChart.data.datasets.forEach(ds => ds.data.shift());
     }
 
-    pressureChart.update('none'); // Update without animation for performance
+    needsChartUpdate = true; // Signal for the interval to update
 }
