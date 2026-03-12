@@ -8,13 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
         75,
-        container.clientWidth / 300,
+        container.clientWidth / 400,
         0.1,
         1000
     );
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(container.clientWidth, 300);
+    renderer.setSize(container.clientWidth, 400);
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
@@ -25,6 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(5, 10, 7.5);
     scene.add(directionalLight);
+
+    // Ground Plane
+    const groundGeometry = new THREE.PlaneGeometry(20, 20);
+    const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.7;
+    scene.add(ground);
 
     // Car Group
     const carGroup = new THREE.Group();
@@ -64,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     wheels.forEach(w => carGroup.add(w));
     scene.add(carGroup);
 
-    camera.position.set(5, 3, 5);
+    camera.position.set(3, 2, 3);
     camera.lookAt(0, 0, 0);
 
     function animate() {
@@ -76,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle window resize
     window.addEventListener('resize', () => {
         const width = container.clientWidth;
-        const height = 300;
+        const height = 400;
         renderer.setSize(width, height);
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
@@ -88,7 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
     window.updateWheel3D = function(id, data) {
         console.log(`3D update for ${id}:`, data);
         const wheelIndex = { 'fl': 0, 'fr': 1, 'rl': 2, 'rr': 3 };
-        if (data.pressure < 28) wheels[wheelIndex[id]].material.color.set(0xff0000);
-        else wheels[wheelIndex[id]].material.color.set(0x333333);
+        const wheel = wheels[wheelIndex[id.toLowerCase()]];
+        
+        if (wheel) {
+            // Change color based on pressure
+            if (data.pressure < 28) {
+                wheel.material.color.set(0xff0000); // Alert Red
+            } else {
+                wheel.material.color.set(0x333333); // Normal Dark Grey
+            }
+        }
     };
 });

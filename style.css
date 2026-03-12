@@ -77,8 +77,7 @@ opacity:.7;
 
 }
 
-#car3d{
-
-height:300px;
-
+#car3d {
+    height: 400px;
+    margin-bottom: 30px;
 }
