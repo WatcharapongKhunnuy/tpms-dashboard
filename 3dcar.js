@@ -20,22 +20,25 @@ const car=new THREE.Mesh(geometry,material)
 
 scene.add(car)
 
-const light=new THREE.PointLight(0xffffff,1)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
-light.position.set(5,5,5)
+const light = new THREE.PointLight(0xffffff, 1);
+light.position.set(5, 5, 5);
+scene.add(light);
 
-scene.add(light)
+camera.position.z = 6;
 
-camera.position.z=6
+function updateWheel(data) {
+    console.log("Updating dashboard with data:", data);
+    // Here you would add logic to update your 3D model or UI elements
+    // based on the received TPMS data (pressure, temp, status).
+}
 
-function animate(){
-
-requestAnimationFrame(animate)
-
-car.rotation.y+=0.003
-
-renderer.render(scene,camera)
-
+function animate() {
+    requestAnimationFrame(animate);
+    car.rotation.y += 0.003;
+    renderer.render(scene, camera);
 }
 
 animate()

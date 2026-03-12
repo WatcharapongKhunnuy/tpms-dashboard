@@ -1,19 +1,22 @@
-const socket=new WebSocket("wss://your-server/tpms")
+const socket = new WebSocket("ws://localhost:8080")
 
-socket.onmessage=e=>{
-
-const data=JSON.parse(e.data)
-
-updateWheel(data)
-
+socket.onopen = () => {
+    console.log("Connected to WebSocket server");
 }
 
-socket.onclose=()=>{
+socket.onmessage = e => {
+    const data = JSON.parse(e.data)
+    console.log("Received data:", data);
+    updateWheel(data)
+}
 
-setTimeout(()=>{
+socket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+}
 
-location.reload()
-
-},3000)
-
+socket.onclose = () => {
+    console.log("Disconnected from WebSocket server. Reconnecting in 3s...");
+    setTimeout(() => {
+        location.reload()
+    }, 3000)
 }
