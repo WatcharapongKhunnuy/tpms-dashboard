@@ -418,6 +418,13 @@ void setup() {
 // --- Loop --------------
 // =======================
 void loop() {
+    // 3️⃣ Check WiFi Connection
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("WiFi disconnected. Reconnecting...");
+        WiFi.begin(ssid, password);
+        delay(500);
+    }
+
     TPMSWheel* wheels[4] = { &frontLeft, &frontRight, &rearLeft, &rearRight };
 
     // คำนวณระดับ alert สูงสุด
@@ -430,7 +437,7 @@ void loop() {
     updateBlinkState();
     displayTPMS();
     
-    // WebSocket communication and data push
+    // 1️⃣ WebSocket communication and data push with Reconnect logic
     if (client.available()) {
         client.poll();
         
@@ -443,9 +450,13 @@ void loop() {
 
         client.send(json);
         Serial.println("Sent TPMS update: " + json);
+        
+        // 2️⃣ Rate limiting: 0.5 Hz update rate (Real car behavior)
+        delay(2000); 
     } else {
-        // Retry connection if disconnected
+        Serial.println("Reconnecting WebSocket...");
         client.connect(websocket_server);
+        delay(1000);
     }
 
     pBLEScan->start(scanTime, false);
