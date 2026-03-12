@@ -30,6 +30,8 @@ const pressureChart = new Chart(ctx, {
     }
 });
 
+const MAX_POINTS = 50;
+
 function addPressureData(data) {
     const time = new Date().toLocaleTimeString();
     pressureChart.data.labels.push(time);
@@ -39,10 +41,10 @@ function addPressureData(data) {
     pressureChart.data.datasets[2].data.push(data.rl.pressure);
     pressureChart.data.datasets[3].data.push(data.rr.pressure);
 
-    if (pressureChart.data.labels.length > 20) {
+    if (pressureChart.data.labels.length > MAX_POINTS) {
         pressureChart.data.labels.shift();
         pressureChart.data.datasets.forEach(ds => ds.data.shift());
     }
 
-    pressureChart.update();
+    pressureChart.update('none'); // Update without animation for performance
 }

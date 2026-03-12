@@ -92,7 +92,20 @@ h1 {
 .logo { font-size: 80px; margin-bottom: 20px; }
 .text { font-size: 24px; letter-spacing: 5px; }
 
-@media (max-width: 800px) {
-    .dashboard { flex-direction: column; }
-    #car3d { width: 100%; height: 300px; }
+body.offline::before {
+    content: "⚠️ SYSTEM OFFLINE - RECONNECTING...";
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    background: #ff0000;
+    color: white;
+    padding: 10px;
+    z-index: 10000;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+body.offline .dashboard, body.offline .chart-container {
+    filter: grayscale(0.8) blur(2px);
+    pointer-events: none;
+    transition: filter 0.5s ease;
 }

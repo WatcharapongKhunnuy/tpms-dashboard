@@ -25,6 +25,15 @@ function updateTireUI(id, wheel) {
     if (tempEl) tempEl.innerText = `${wheel.temp}°C`;
 }
 
+// Offline UI Control
+function showOffline() {
+    document.body.classList.add("offline");
+}
+
+function hideOffline() {
+    document.body.classList.remove("offline");
+}
+
 // Register PWA Service Worker
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
