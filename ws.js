@@ -1,13 +1,20 @@
-const socket = new WebSocket("ws://localhost:8080")
+const SERVER_URL = window.location.hostname === 'localhost' 
+    ? "ws://localhost:8080" 
+    : "wss://tpms-dashboard-server.onrender.com"; // <-- Update this after cloud deployment
+
+const socket = new WebSocket(SERVER_URL);
 
 socket.onopen = () => {
-    console.log("Connected to WebSocket server");
+    console.log(`Connected to WebSocket server at ${SERVER_URL}`);
 }
 
 socket.onmessage = e => {
-    const data = JSON.parse(e.data)
-    console.log("Received data:", data);
-    updateWheel(data)
+    const payload = JSON.parse(e.data);
+    console.log("Received data:", payload);
+    
+    if (payload.type === 'init' || payload.type === 'update') {
+        updateWheel(payload.data);
+    }
 }
 
 socket.onerror = (error) => {

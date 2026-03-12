@@ -1,37 +1,44 @@
 const WebSocket = require('ws');
+const port = process.env.PORT || 8080;
+const wss = new WebSocket.Server({ port });
 
-const wss = new WebSocket.Server({ port: 8080 });
+console.log(`WebSocket server is running on port ${port}`);
 
-console.log('WebSocket server is running on ws://localhost:8080');
-
-// Generate simulated TPMS data
-function generateTPMSData() {
-  return JSON.stringify({
-    timestamp: new Date().toISOString(),
-    data: {
-      fl: { pressure: (Math.random() * (35 - 30) + 30).toFixed(1), temp: Math.floor(Math.random() * (45 - 35) + 35), status: 'ok' },
-      fr: { pressure: (Math.random() * (35 - 30) + 30).toFixed(1), temp: Math.floor(Math.random() * (45 - 35) + 35), status: 'ok' },
-      rl: { pressure: (Math.random() * (35 - 30) + 30).toFixed(1), temp: Math.floor(Math.random() * (45 - 35) + 35), status: 'ok' },
-      rr: { pressure: (Math.random() * (35 - 30) + 30).toFixed(1), temp: Math.floor(Math.random() * (45 - 35) + 35), status: 'ok' }
-    }
-  });
-}
+// Store the latest data state
+let latestData = {
+    fl: { pressure: 0, temp: 0, status: 'offline' },
+    fr: { pressure: 0, temp: 0, status: 'offline' },
+    rl: { pressure: 0, temp: 0, status: 'offline' },
+    rr: { pressure: 0, temp: 0, status: 'offline' }
+};
 
 wss.on('connection', (ws) => {
-  console.log('Client connected');
-  
-  // Send initial data
-  ws.send(generateTPMSData());
+    console.log('New client connected');
 
-  // Set interval to send data every 5 seconds
-  const interval = setInterval(() => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(generateTPMSData());
-    }
-  }, 5000);
+    // Send the last known state immediately upon connection
+    ws.send(JSON.stringify({ type: 'init', data: latestData }));
 
-  ws.on('close', () => {
-    console.log('Client disconnected');
-    clearInterval(interval);
-  });
+    ws.on('message', (message) => {
+        try {
+            const payload = JSON.parse(message);
+            
+            // If message is from ESP32 (Producer)
+            if (payload.type === 'update') {
+                latestData = { ...latestData, ...payload.data };
+                console.log('Data updated from ESP32:', latestData);
+                
+                // Broadcast updated data to all connected Dashboards (Consumers)
+                const broadcastData = JSON.stringify({ type: 'update', data: latestData });
+                wss.clients.forEach((client) => {
+                    if (client !== ws && client.readyState === WebSocket.OPEN) {
+                        client.send(broadcastData);
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('Error processing message:', e.message);
+        }
+    });
+
+    ws.on('close', () => console.log('Client disconnected'));
 });
